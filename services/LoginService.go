@@ -4,7 +4,6 @@ import (
 	"UserRestApi/helpers"
 	"UserRestApi/models"
 	"errors"
-	"fmt"
 
 	"github.com/golang-jwt/jwt/v4"
 )
@@ -25,10 +24,8 @@ func (ref *LoginService) Login(username, password string) (string, error) {
 	if err != nil {
 		return token, err
 	}
-	fmt.Println(user.Password)
 	isAuthenticated := helpers.CheckBcrypt(user.Password, password)
-	fmt.Println(isAuthenticated)
-	if isAuthenticated {
+	if !isAuthenticated {
 		return token, errors.New("incorrect password")
 	}
 	return getJwtToken(user)
@@ -47,6 +44,7 @@ func getJwtToken(user models.User) (string, error) {
 			Issuer:    "Authentication service",
 		},
 	})
+	// JWT secret key needs to be converted into bytes
 	secret := helpers.GetEnvParam("JWT_SECRET")
-	return generator.SignedString(secret)
+	return generator.SignedString([]byte(secret))
 }

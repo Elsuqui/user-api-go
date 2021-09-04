@@ -17,15 +17,16 @@ type UserController struct {
 	userControllerService services.UserService
 }
 
-func (controller *UserController) Index(ctx *gin.Context) []models.User {
+func (controller *UserController) Index(ctx *gin.Context) []models.UserPublicInformation {
 	users := controller.userControllerService.FindAll()
 	ctx.JSON(200, users)
 	return users
 }
 
-func (controller *UserController) Show(ctx *gin.Context) models.User {
-	param := ctx.GetInt("id")
-	user := controller.userControllerService.Find(param)
+func (controller *UserController) Show(ctx *gin.Context) models.UserPublicInformation {
+	param := ctx.Param("id")
+	id, _ := strconv.Atoi(param)
+	user := controller.userControllerService.Find(id)
 	ctx.JSON(200, user)
 	return user
 }
@@ -34,7 +35,12 @@ func (controller *UserController) Store(ctx *gin.Context) models.User {
 	var newUser models.User
 	ctx.ShouldBind(&newUser)
 	newUser, _ = controller.userControllerService.Store(newUser)
-	ctx.JSON(200, newUser)
+	ctx.JSON(200, gin.H{
+		"id":         newUser.ID,
+		"created_at": newUser.CreatedAt,
+		"username":   newUser.Username,
+		"status":     newUser.Status,
+	})
 	return newUser
 }
 

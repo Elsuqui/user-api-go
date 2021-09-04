@@ -10,14 +10,17 @@ type UserService struct {
 	userModel models.User
 }
 
-func (ref *UserService) FindAll() []models.User {
-	users := []models.User{}
-	mysql.DB.Find(&users)
+func (ref *UserService) FindAll() []models.UserPublicInformation {
+	users := []models.UserPublicInformation{}
+	selectFields := []string{"id", "created_at", "updated_at", "deleted_at", "username", "status"}
+	mysql.DB.Table("users").
+		Select(selectFields).
+		Find(&users)
 	return users
 }
 
-func (ref *UserService) Find(id int) models.User {
-	var user models.User
+func (ref *UserService) Find(id int) models.UserPublicInformation {
+	var user models.UserPublicInformation
 	mysql.DB.Table("users").
 		Select("*").
 		Where("id = ?", id).

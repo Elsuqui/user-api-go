@@ -47,7 +47,9 @@ func CheckBcrypt(hash, compareValue string) bool {
 	hashedValue := []byte(hash)
 	plainValue := []byte(compareValue)
 	err := bcrypt.CompareHashAndPassword(hashedValue, plainValue)
-	fmt.Println(err.Error())
+	if err != nil {
+		fmt.Println(err.Error())
+	}
 	return err == nil
 }
 
